@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: api.commond
+  datasource:
+    url: jdbc:postgresql://${PGSQL_SERVICE_HOST}:${PGSQL_SERVICE_PORT}/database
+    username: dbuser
+    password: dbpass
+    driver-class-name: org.postgresql.Driver
