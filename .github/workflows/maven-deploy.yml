@@ -12,9 +12,9 @@ jobs:
         java-version: '21'
         distribution: 'microsoft'
         cache: maven
-    - name: Build with Maven
+    - name: Compilando
       run: mvn -B package test --file pom.xml
-    - name: Publish to GitHub Packages
+    - name: publicando el paquete en GitHub
       run: mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/cmsystem/CMSystemCApiCommond
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
