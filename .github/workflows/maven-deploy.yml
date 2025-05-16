@@ -26,16 +26,16 @@ jobs:
     - name: Delete old package versions (keeping only latest)
       run: |
         PACKAGE_NAME="api.commond"
-        OWNER="cmsystem"  # Si es una organización. Cambia a tu nombre de usuario si no lo es.
+        OWNER="cmsystem"  # Cambia si es usuario en vez de org
         PACKAGE_TYPE="maven"
-        TOKEN=${{ secrets.GITHUBTOKEN }}
-
+        TOKEN=$GITHUB_TOKEN
+    
         echo "Fetching package versions for $PACKAGE_NAME..."
-
+    
         VERSIONS=$(curl -s -H "Authorization: Bearer $TOKEN" \
           -H "Accept: application/vnd.github+json" \
-          https://api.github.com/orgs/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions | jq '.[].id')
-
+          https://api.github.com/orgs/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions | jq '.package_versions[].id')
+    
         COUNT=0
         for VERSION_ID in $VERSIONS; do
           COUNT=$((COUNT+1))
