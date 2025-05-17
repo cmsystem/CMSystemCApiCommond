@@ -23,40 +23,42 @@ jobs:
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "version=$VERSION" >> $GITHUB_ENV
 
-    - name: Delete old package versions (keeping only latest)
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Delete old package versions (keep latest)
       run: |
-        PACKAGE_NAME="api.commond"
+        PACKAGE_NAME="com.pe.cmsystem.api.commond"
         OWNER="cmsystem"
         PACKAGE_TYPE="maven"
         TOKEN=$GITHUB_TOKEN
-    
+
         echo "Fetching package versions for $PACKAGE_NAME..."
-    
-        # Para debug temporal, ver respuesta
-        curl -s -H "Authorization: Bearer $TOKEN" \
+
+        RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" \
           -H "Accept: application/vnd.github+json" \
-          https://api.github.com/orgs/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions > response.json
-        cat response.json
-    
-        # Cambia orgs por users si OWNER es usuario:
-        # https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions
-    
-        VERSIONS=$(jq '.package_versions[].id' response.json)
-    
+          https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions)
+
+        VERSION_IDS=$(echo "$RESPONSE" | jq '.[].id')
+
+        echo "Found versions:"
+        echo "$VERSION_IDS"
+
+        # Keep only the most recent version (first in list)
         COUNT=0
-        for VERSION_ID in $VERSIONS; do
+        for VERSION_ID in $VERSION_IDS; do
           COUNT=$((COUNT+1))
           if [ "$COUNT" -gt 1 ]; then
             echo "Deleting version ID: $VERSION_ID"
             curl -s -X DELETE -H "Authorization: Bearer $TOKEN" \
               -H "Accept: application/vnd.github+json" \
-              https://api.github.com/orgs/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$VERSION_ID
+              https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$VERSION_ID
           fi
         done
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
-    - name: Publicando el paquete en GitHub
+    - name: Deploy package to GitHub Packages
       run: mvn clean deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/cmsystem/CMSystemCApiCommond
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
