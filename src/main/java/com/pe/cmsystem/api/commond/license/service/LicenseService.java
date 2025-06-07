@@ -11,5 +11,5 @@ public interface LicenseService extends CMSystemCrudService<LicenseEO> {
 
     Optional<LicenseEO> findByCodigoAndFlgact(String codigo);
     Optional<LicenseStructure> valorVigente(String serieKey);
-
+    Optional<LicenseEO> validaCodigoVigente(String serieKey, String codigo);
 }

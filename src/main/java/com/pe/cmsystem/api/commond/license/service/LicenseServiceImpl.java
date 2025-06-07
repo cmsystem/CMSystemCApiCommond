@@ -35,7 +35,20 @@ public class LicenseServiceImpl extends CMSystemCrudServiceImpl<LicenseEO, Licen
     public Optional<LicenseStructure> valorVigente(String serieKey) {
         return convertirFormato(this.repository.findByFlgact(1), serieKey);
     }
-
+    @Override
+    public Optional<LicenseEO> validaCodigoVigente(String serieKey, String codigo) {
+        Optional<LicenseEO> licenseEO = this.repository.findByFlgact(1);
+        Optional<LicenseStructure> licenseEs = convertirFormato(licenseEO, serieKey);
+        if(!licenseEs.isEmpty())
+        {
+            if(licenseEs.get().getCodigoStr().equals(codigo) )
+            {
+                licenseEO.get().setCodigo(codigo);
+                return Optional.of(this.repository.save(licenseEO.get()));
+            }
+        }
+        return null;
+    }
     private Optional<LicenseStructure> convertirFormato(Optional<LicenseEO> licenseEO, String serieKey){
         return licenseEO.flatMap(license -> convertLicense(license, serieKey));
     }
@@ -43,7 +56,10 @@ public class LicenseServiceImpl extends CMSystemCrudServiceImpl<LicenseEO, Licen
     private Optional<LicenseStructure> convertLicense(LicenseEO license, String serieKey ) {
         try {
             String decrypted = LicenseEncryptor.decrypt(license.getLicenseText(), serieKey);
-            return Optional.ofNullable(LicenseEncryptor.parseJsonToLicense(decrypted));
+            Optional<LicenseStructure> estructure = Optional.ofNullable(LicenseEncryptor.parseJsonToLicense(decrypted));
+            estructure.get().setCodigoStr(estructure.get().getCodigo());
+            estructure.get().setCodigo(license.getCodigo());
+            return estructure;
         } catch (Exception e) {
             return null;
         }

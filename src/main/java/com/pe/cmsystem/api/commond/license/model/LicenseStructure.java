@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class LicenseStructure implements Serializable {
     private String codigo;
+    private String codigoStr;
     private String serieKey;
     private Date fechaInicio;
     private Date fechaFinal;
