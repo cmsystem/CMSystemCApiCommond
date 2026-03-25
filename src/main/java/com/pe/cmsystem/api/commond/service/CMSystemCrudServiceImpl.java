@@ -69,6 +69,8 @@ public abstract class CMSystemCrudServiceImpl<E extends CMSystemEntityID, R exte
     public E create(E entity) {
         entity.setUsuins(getAuthentication().getIdUsuario());
         entity.setDatins(new Date());
+        if(entity.getFlgact() == null)
+            entity.setFlgact(1);
         return repository.save(entity);
     }
 
@@ -89,6 +91,8 @@ public abstract class CMSystemCrudServiceImpl<E extends CMSystemEntityID, R exte
         }
         entity.setUsumod(getAuthentication().getIdUsuario());
         entity.setDatmod(new Date());
+        if(entity.getFlgact() == null)
+            entity.setFlgact(entityDB.getFlgact());
         return repository.save(entity);
     }
 

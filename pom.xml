@@ -14,7 +14,7 @@
 
     <groupId>com.pe.cmsystem</groupId>
     <artifactId>api.commond</artifactId>
-    <version>1.0.20</version>
+    <version>1.0.21</version>
     <name>api_commond</name>
     <description>cmsystem.api.commond</description>
     <packaging>jar</packaging>
@@ -60,6 +60,12 @@
             <version>6.6.1.Final</version>
         </dependency>
 
+        <!-- jbcrypt -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
