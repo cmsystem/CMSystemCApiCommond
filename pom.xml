@@ -14,7 +14,7 @@
 
     <groupId>com.pe.cmsystem</groupId>
     <artifactId>api.commond</artifactId>
-    <version>1.0.21</version>
+    <version>1.0.22</version>
     <name>api_commond</name>
     <description>cmsystem.api.commond</description>
     <packaging>jar</packaging>
