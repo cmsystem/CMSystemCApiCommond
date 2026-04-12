@@ -101,7 +101,8 @@ public abstract class CMSystemCrudController<E extends CMSystemEntityID, T exten
      */
     @GetMapping(value = "/findById/{id}"
             , produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CMSystemResponseRest<E>> findById(@PathVariable(value = "id", required = true) Long id) {
+    public ResponseEntity<CMSystemResponseRest<E>> findById(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                                                            @PathVariable(value = "id", required = true) Long id) {
         log.info("[CRUD] Buscando entidad por id: {}", id);
         return adapterController.execute(uuid -> this.getService().findById(id));
     }
