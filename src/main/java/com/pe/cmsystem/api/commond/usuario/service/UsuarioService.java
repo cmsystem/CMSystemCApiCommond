@@ -4,6 +4,7 @@ package com.pe.cmsystem.api.commond.usuario.service;
 import com.pe.cmsystem.api.commond.service.CMSystemCrudService;
 import com.pe.cmsystem.api.commond.usuario.eo.UsuarioEO;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioService extends CMSystemCrudService<UsuarioEO> {
@@ -23,4 +24,6 @@ public interface UsuarioService extends CMSystemCrudService<UsuarioEO> {
      * @return UsuarioEO
      */
     Optional<UsuarioEO> findByUsername(String username);
+
+
 }

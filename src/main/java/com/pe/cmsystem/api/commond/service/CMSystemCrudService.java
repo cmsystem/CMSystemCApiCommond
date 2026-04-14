@@ -3,10 +3,12 @@ package com.pe.cmsystem.api.commond.service;
 import com.pe.cmsystem.api.commond.controllers.CMSystemRequestLOV;
 import com.pe.cmsystem.api.commond.controllers.CMSystemResponsetItemLOV;
 import com.pe.cmsystem.api.commond.eo.CMSystemEntityID;
+import com.pe.cmsystem.api.commond.usuario.eo.UsuarioEO;
 import jakarta.persistence.criteria.CriteriaQuery;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * CMSystem Crud Service
@@ -51,6 +53,14 @@ public interface CMSystemCrudService<T extends CMSystemEntityID> {
     T findById(Long id);
 
     /**
+     * Find entity by id
+     *
+     * @param id entity id
+     * @return entity
+     */
+    T findByIdAll(Long id);
+
+    /**
      * Find all entities
      *
      * @return list of entities
@@ -66,4 +76,6 @@ public interface CMSystemCrudService<T extends CMSystemEntityID> {
      * @return list of entities
      */
     List<CMSystemResponsetItemLOV> findLOV(CMSystemRequestLOV requestLOV);
+
+    List<T> findByField(String fieldName, Object value);
 }

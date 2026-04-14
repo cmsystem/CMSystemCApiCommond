@@ -140,6 +140,12 @@ public abstract class CMSystemCrudController<E extends CMSystemEntityID, T exten
     public ResponseEntity<CMSystemResponseRest<List<CMSystemResponsetItemLOV>>> findLOV(@RequestBody(required = true) CMSystemRequestLOV configLOV) {
         return adapterController.execute(uuid -> this.getService().findLOV(configLOV));
     }
+    @GetMapping("/findByField")
+    public ResponseEntity<CMSystemResponseRest<List<E>>> findByField(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                                                                     @RequestParam String campo,
+                                                                     @RequestParam String valor) {
+        return adapterController.execute( uuid -> this.getService().findByField(campo, valor)) ;
+    }
 
     protected T getService() {
         return service;

@@ -6,6 +6,7 @@ import com.pe.cmsystem.api.commond.usuario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,4 +51,6 @@ public class UsuarioServiceImpl extends CMSystemCrudServiceImpl<UsuarioEO, Usuar
     public Optional<UsuarioEO> findByUsername(String username) {
         return this.repository.findByUsername(username);
     }
+
+
 }

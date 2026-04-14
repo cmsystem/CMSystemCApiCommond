@@ -110,6 +110,19 @@ public abstract class CMSystemCrudAuthController<E extends CMSystemEntityID, T e
     }
 
     /**
+     * Find entity by id
+     *
+     * @param id entity id
+     * @return entity
+     */
+    @GetMapping(value = "/findByIdAll/{id}"
+            , produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CMSystemResponseRest<E>> findByIdAll(@PathVariable(value = "id", required = true) Long id) {
+        log.info("[CRUD] Buscando entidad por id: {}", id);
+        return adapterController.execute(uuid -> this.getService().findByIdAll(id));
+    }
+
+    /**
      * Buscar todos los registros con la configuración de la paginación
      *
      * @return list of entities

@@ -3,6 +3,7 @@ package com.pe.cmsystem.api.commond.usuario.repository;
 import com.pe.cmsystem.api.commond.repository.CMSystemCrudRepository;
 import com.pe.cmsystem.api.commond.usuario.eo.UsuarioEO;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends CMSystemCrudRepository<UsuarioEO> {
@@ -22,4 +23,6 @@ public interface UsuarioRepository extends CMSystemCrudRepository<UsuarioEO> {
      * @return UsuarioEO
      */
     Optional<UsuarioEO> findByUsername(String username);
+
+    UsuarioEO findByUsernameAndFlgact(String username, int flgact);
 }

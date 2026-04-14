@@ -5,16 +5,22 @@ import com.pe.cmsystem.api.commond.controllers.CMSystemRequestLOV;
 import com.pe.cmsystem.api.commond.controllers.CMSystemResponsetItemLOV;
 import com.pe.cmsystem.api.commond.eo.CMSystemEntityID;
 import com.pe.cmsystem.api.commond.repository.CMSystemCrudRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -147,6 +153,16 @@ public abstract class CMSystemCrudServiceImpl<E extends CMSystemEntityID, R exte
     public E findById(Long id) {
         return repository.findByIdAndFlgact(id, 1).orElse(null);
     }
+    /**
+     * Busca un registro por ID
+     *
+     * @param id ID del registro a buscar
+     * @return entity EO
+     */
+    @Override
+    public E findByIdAll(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 
     /**
      * Busca todos los registros, con la configuración de paginación
@@ -226,6 +242,30 @@ public abstract class CMSystemCrudServiceImpl<E extends CMSystemEntityID, R exte
                                 , (existing, replacement) -> existing, // Manejo de colisiones
                                 CMSystemResponsetItemLOV::new)))
                 .orElse(new CMSystemResponsetItemLOV());
+    }
+    @PersistenceContext
+    private EntityManager entityManager;
+    @SuppressWarnings("unchecked")
+    private Class<E> getEntityClass() {
+        return (Class<E>) ((ParameterizedType) getClass()
+                .getGenericSuperclass())
+                .getActualTypeArguments()[0];
+    }
+    public List<E> findByField(String fieldName, Object value) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<E> cq = cb.createQuery(getEntityClass());
+            Root<E> root = cq.from(getEntityClass());
+
+            cq.select(root)
+                    .where(cb.equal(root.get(fieldName), value));
+
+            return entityManager.createQuery(cq).getResultList();
+
+        } catch (Exception e) {
+            log.error("Error buscando por campo {}: {}", fieldName, e.getMessage());
+            return List.of();
+        }
     }
 }
 
