@@ -1,8 +1,11 @@
 name: Java Maven Deploy
 
 on:
-  workflow_dispatch:
-
+  workflow_run:
+    workflows: [ "Java CI with Maven" ]   
+    types: [ completed ]
+    branches: [ main ]
+  workflow_dispatch:                      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -55,6 +58,36 @@ jobs:
               https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$VERSION_ID
           fi
         done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+
+    # GitHub Packages no permite volver a publicar una versión existente (409 Conflict),
+    # así que si la versión del pom ya está publicada se elimina para sobrescribirla.
+    - name: Delete current version if it already exists
+      run: |
+        PACKAGE_NAME="com.pe.cmsystem.api.commond"
+        OWNER="cmsystem"
+        PACKAGE_TYPE="maven"
+        API="https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME"
+        AUTH=(-H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json")
+
+        RESPONSE=$(curl -s "${AUTH[@]}" "$API/versions")
+        CURRENT_ID=$(echo "$RESPONSE" | jq -r --arg v "$version" '.[]? | select(.name == $v) | .id')
+        TOTAL=$(echo "$RESPONSE" | jq '[.[]?] | length')
+
+        if [ -z "$CURRENT_ID" ]; then
+          echo "La versión $version no existe todavía, se publicará normalmente."
+          exit 0
+        fi
+
+        if [ "$TOTAL" -le 1 ]; then
+          # GitHub no deja borrar la última versión de un paquete: se borra el paquete completo
+          echo "La versión $version es la única publicada, eliminando el paquete para republicarlo..."
+          curl -s -f -X DELETE "${AUTH[@]}" "$API"
+        else
+          echo "La versión $version ya existe (id $CURRENT_ID), eliminándola para republicarla..."
+          curl -s -f -X DELETE "${AUTH[@]}" "$API/versions/$CURRENT_ID"
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
